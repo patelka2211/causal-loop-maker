@@ -1,8 +1,30 @@
 "use client";
 
+import {
+  ArrowRightIcon,
+  FolderPlusIcon,
+  Loader2Icon,
+  PencilIcon,
+  PlusIcon,
+  RefreshCwIcon,
+  SearchIcon,
+  Trash2Icon,
+  XIcon,
+} from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import { deleteTopic } from "@/app/actions/topics";
 import CreateTopicModal from "@/components/CreateTopicModal";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import type { Tables } from "@/utils/supabase/schema";
 
 type Topic = Tables<"topics">;
@@ -50,71 +72,47 @@ export default function TopicList({ initialTopics }: TopicListProps) {
   return (
     <div className="w-full space-y-6">
       {/* Controls & Search Header */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 rounded-2xl bg-white p-4 shadow-sm border border-zinc-200 dark:bg-zinc-900/60 dark:border-zinc-800 backdrop-blur-md">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 rounded-xl bg-card p-4 ring-1 ring-foreground/10 shadow-xs">
         <div className="relative flex-1 max-w-md">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-            <svg
-              className="h-4 w-4 text-zinc-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <title>Search Icon</title>
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
+            <SearchIcon className="size-4" />
           </div>
-          <input
+          <Input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search topics by title or description..."
-            className="w-full rounded-xl border border-zinc-200 bg-zinc-50 pl-10 pr-4 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 focus:border-indigo-500 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-800/50 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:bg-zinc-800 transition-all"
+            className="pl-9 pr-9"
           />
           {searchQuery && (
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon-xs"
               onClick={() => setSearchQuery("")}
-              className="absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+              className="absolute inset-y-0 right-1 my-auto text-muted-foreground hover:text-foreground"
             >
-              Clear
-            </button>
+              <XIcon />
+              <span className="sr-only">Clear search</span>
+            </Button>
           )}
         </div>
 
         <div className="flex items-center justify-between sm:justify-end gap-3">
-          <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 px-3 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800/80">
+          <Badge variant="secondary">
             {filteredTopics.length}{" "}
             {filteredTopics.length === 1 ? "Topic" : "Topics"}
-          </span>
-          <button
+          </Badge>
+          <Button
             type="button"
             onClick={() => {
               setEditingTopic(null);
               setIsModalOpen(true);
             }}
-            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-600/20 hover:bg-indigo-500 active:bg-indigo-700 transition-all cursor-pointer"
           >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2.5}
-            >
-              <title>Plus Icon</title>
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4.5v15m7.5-7.5h-15"
-              />
-            </svg>
+            <PlusIcon data-icon="inline-start" />
             Create Topic
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -122,222 +120,154 @@ export default function TopicList({ initialTopics }: TopicListProps) {
       {filteredTopics.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredTopics.map((topic) => (
-            <div
+            <Card
               key={topic.id}
-              className="group relative flex flex-col justify-between rounded-2xl bg-white p-5 shadow-sm border border-zinc-200 hover:border-indigo-300 hover:shadow-md dark:bg-zinc-900/80 dark:border-zinc-800 dark:hover:border-indigo-900/60 transition-all"
+              className="group relative flex flex-col justify-between hover:ring-primary/40 transition-all shadow-xs"
             >
-              <div>
-                {/* Header tag */}
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <div className="inline-flex items-center gap-1.5 rounded-md bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/40">
-                    <svg
-                      className="h-3.5 w-3.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <title>Loop</title>
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                      />
-                    </svg>
-                    <span>Causal Model</span>
-                  </div>
-                  <span className="text-[11px] text-zinc-400 dark:text-zinc-500">
+              <CardHeader className="gap-2">
+                <div className="flex items-center justify-between gap-2">
+                  <Badge
+                    variant="outline"
+                    className="text-primary border-primary/20 bg-primary/5"
+                  >
+                    <RefreshCwIcon data-icon="inline-start" />
+                    Causal Model
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">
                     {formatDate(topic.updated_at || topic.created_at)}
                   </span>
                 </div>
 
-                {/* Topic Name */}
-                <h4 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
+                <CardTitle className="group-hover:text-primary transition-colors line-clamp-1">
                   {topic.name}
-                </h4>
-
-                {/* Description */}
-                <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400 line-clamp-3 leading-relaxed min-h-[3rem]">
+                </CardTitle>
+                <CardDescription className="line-clamp-3 min-h-[3rem]">
                   {topic.description || "No description provided."}
-                </p>
-              </div>
+                </CardDescription>
+              </CardHeader>
 
-              {/* Actions Footer */}
-              <div className="mt-5 pt-4 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between gap-2">
-                <a
-                  href={`/topics/${topic.id}`}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
-                >
-                  <span>Open Diagram</span>
-                  <svg
-                    className="h-3.5 w-3.5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <title>Arrow Right</title>
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                    />
-                  </svg>
-                </a>
+              <CardFooter className="mt-auto justify-between pt-3">
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="px-0 font-semibold text-primary"
+                  render={
+                    <Link href={`/topics/${topic.id}`}>
+                      Open Diagram
+                      <ArrowRightIcon data-icon="inline-end" />
+                    </Link>
+                  }
+                />
 
                 <div className="flex items-center gap-1">
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon-sm"
                     onClick={() => {
                       setEditingTopic(topic);
                       setIsModalOpen(true);
                     }}
-                    className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 dark:hover:text-zinc-200 dark:hover:bg-zinc-800 transition-colors"
                     title="Edit topic"
                   >
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <title>Edit</title>
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"
-                      />
-                    </svg>
-                  </button>
+                    <PencilIcon />
+                    <span className="sr-only">Edit topic</span>
+                  </Button>
 
                   {deletingTopicId === topic.id ? (
                     <div className="flex items-center gap-1">
-                      <button
+                      <Button
                         type="button"
+                        variant="destructive"
+                        size="xs"
                         onClick={() => handleDelete(topic.id)}
                         disabled={isPending}
-                        className="rounded-md bg-red-600 px-2 py-1 text-[11px] font-bold text-white hover:bg-red-700 transition-colors disabled:opacity-50"
                       >
+                        {isPending && (
+                          <Loader2Icon
+                            className="animate-spin"
+                            data-icon="inline-start"
+                          />
+                        )}
                         Confirm
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         type="button"
+                        variant="outline"
+                        size="xs"
                         onClick={() => setDeletingTopicId(null)}
-                        className="rounded-md bg-zinc-200 dark:bg-zinc-700 px-2 py-1 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 transition-colors"
                       >
                         Cancel
-                      </button>
+                      </Button>
                     </div>
                   ) : (
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon-sm"
                       onClick={() => setDeletingTopicId(topic.id)}
-                      className="p-1.5 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-950/50 transition-colors"
+                      className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                       title="Delete topic"
                     >
-                      <svg
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <title>Delete</title>
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                        />
-                      </svg>
-                    </button>
+                      <Trash2Icon />
+                      <span className="sr-only">Delete topic</span>
+                    </Button>
                   )}
                 </div>
-              </div>
-            </div>
+              </CardFooter>
+            </Card>
           ))}
         </div>
       ) : searchQuery ? (
-        <div className="flex flex-col items-center justify-center p-12 text-center rounded-2xl bg-white border border-dashed border-zinc-300 dark:bg-zinc-900/40 dark:border-zinc-800">
-          <svg
-            className="h-10 w-10 text-zinc-400 mb-3"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.5}
-          >
-            <title>No Search Results</title>
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-          <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
-            No topics found
-          </h3>
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            No topics matched "{searchQuery}". Try searching for something else
-            or clear the filter.
-          </p>
-          <button
-            type="button"
-            onClick={() => setSearchQuery("")}
-            className="mt-4 rounded-xl border border-zinc-300 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 transition-colors"
-          >
-            Clear Search
-          </button>
-        </div>
+        <Card className="flex flex-col items-center justify-center p-12 text-center border-dashed">
+          <CardHeader className="items-center text-center pb-2">
+            <SearchIcon className="size-10 text-muted-foreground/60 mb-2" />
+            <CardTitle className="text-base font-semibold">
+              No topics found
+            </CardTitle>
+            <CardDescription className="max-w-xs">
+              No topics matched &quot;{searchQuery}&quot;. Try searching for
+              something else or clear the filter.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="pt-2 border-t-0 bg-transparent">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setSearchQuery("")}
+            >
+              Clear Search
+            </Button>
+          </CardFooter>
+        </Card>
       ) : (
-        <div className="flex flex-col items-center justify-center p-14 text-center rounded-2xl bg-white border border-dashed border-zinc-300 dark:bg-zinc-900/40 dark:border-zinc-800">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 mb-4 shadow-inner">
-            <svg
-              className="h-8 w-8"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.5}
+        <Card className="flex flex-col items-center justify-center p-12 text-center border-dashed">
+          <CardHeader className="items-center text-center pb-2">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-3">
+              <FolderPlusIcon className="size-7" />
+            </div>
+            <CardTitle className="text-lg font-bold">
+              No topics created yet
+            </CardTitle>
+            <CardDescription className="max-w-sm">
+              Create your first causal topic to start mapping variables,
+              cause-and-effect relationships, and feedback loops.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="pt-4 border-t-0 bg-transparent">
+            <Button
+              type="button"
+              onClick={() => {
+                setEditingTopic(null);
+                setIsModalOpen(true);
+              }}
             >
-              <title>No Topics</title>
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
-            No topics created yet
-          </h3>
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 max-w-sm">
-            Create your first causal topic to start mapping variables,
-            cause-and-effect relationships, and feedback loops.
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              setEditingTopic(null);
-              setIsModalOpen(true);
-            }}
-            className="mt-5 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-600/20 hover:bg-indigo-500 transition-all cursor-pointer"
-          >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2.5}
-            >
-              <title>Plus</title>
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4.5v15m7.5-7.5h-15"
-              />
-            </svg>
-            Create Your First Topic
-          </button>
-        </div>
+              <PlusIcon data-icon="inline-start" />
+              Create Your First Topic
+            </Button>
+          </CardFooter>
+        </Card>
       )}
 
       {/* Modal */}
