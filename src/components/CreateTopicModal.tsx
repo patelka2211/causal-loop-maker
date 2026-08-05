@@ -2,7 +2,7 @@
 
 import { AlertCircleIcon, Loader2Icon } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { createTopic, updateTopic } from "@/app/actions/topics";
+import { createTopic, updateTopic } from "@/utils/supabase/actions/topics";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {

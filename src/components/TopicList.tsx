@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
-import { deleteTopic } from "@/app/actions/topics";
+import { deleteTopic } from "@/utils/supabase/actions/topics";
 import CreateTopicModal from "@/components/CreateTopicModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
