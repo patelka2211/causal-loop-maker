@@ -2,11 +2,11 @@
 
 import {
   ArrowRightIcon,
+  CalendarIcon,
   FolderPlusIcon,
   Loader2Icon,
   PencilIcon,
   PlusIcon,
-  RefreshCwIcon,
   SearchIcon,
   Trash2Icon,
   XIcon,
@@ -125,22 +125,15 @@ export default function TopicList({ initialTopics }: TopicListProps) {
               className="group relative flex flex-col justify-between hover:ring-primary/40 transition-all shadow-xs"
             >
               <CardHeader className="gap-2">
-                <div className="flex items-center justify-between gap-2">
-                  <Badge
-                    variant="outline"
-                    className="text-primary border-primary/20 bg-primary/5"
-                  >
-                    <RefreshCwIcon data-icon="inline-start" />
-                    Causal Model
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">
+                <div className="flex items-start justify-between gap-3">
+                  <CardTitle className="group-hover:text-primary transition-colors line-clamp-1">
+                    {topic.name}
+                  </CardTitle>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap shrink-0 flex items-center gap-1.5 pt-0.5">
+                    <CalendarIcon className="size-3.5" />
                     {formatDate(topic.updated_at || topic.created_at)}
                   </span>
                 </div>
-
-                <CardTitle className="group-hover:text-primary transition-colors line-clamp-1">
-                  {topic.name}
-                </CardTitle>
                 <CardDescription className="line-clamp-3 min-h-[3rem]">
                   {topic.description || "No description provided."}
                 </CardDescription>
@@ -152,7 +145,7 @@ export default function TopicList({ initialTopics }: TopicListProps) {
                   size="sm"
                   className="px-0 font-semibold text-primary"
                   render={
-                    <Link href={`/topics/${topic.id}`}>
+                    <Link href={`/topic/${topic.id}`}>
                       Open Diagram
                       <ArrowRightIcon data-icon="inline-end" />
                     </Link>

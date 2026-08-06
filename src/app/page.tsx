@@ -1,20 +1,31 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import Link from "next/link";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 import SignOutButton from "@/components/SignOutButton";
 import TopicList from "@/components/TopicList";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { createClient } from "@/utils/supabase/server";
+import { getUser } from "@/utils/supabase/server";
 
-export default async function Home() {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export default async function Page() {
+  const { supabase, user } = await getUser();
 
   if (!user) {
-    redirect("/login");
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-4 font-sans">
+        <div className="max-w-sm w-full p-8 space-y-6 bg-card rounded-xl border border-border text-center shadow-xs">
+          <div className="space-y-2">
+            <h1 className="text-xl font-bold tracking-tight">
+              Causal Loop Maker
+            </h1>
+            <p className="text-xs text-muted-foreground">
+              Sign in to access and manage your causal loop diagrams.
+            </p>
+          </div>
+          <div className="flex justify-center pt-2">
+            <GoogleSignInButton />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const { data: topics } = await supabase
@@ -33,9 +44,12 @@ export default async function Home() {
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
       <header className="border-b border-border bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-          <span className="font-bold text-lg tracking-tight">
+          <Link
+            href="/"
+            className="font-bold text-lg tracking-tight hover:opacity-80 transition-opacity"
+          >
             Causal Loop Maker
-          </span>
+          </Link>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-muted/60 border border-border text-xs">
               <Avatar className="size-6">

@@ -1,13 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
-import type { cookies } from "next/headers";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import type { Database } from "./schema";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
 
-export const createClient = (
-  cookieStore: Awaited<ReturnType<typeof cookies>>,
-) => {
+export const createClient = async () => {
+  const cookieStore = await cookies();
   return createServerClient<Database>(supabaseUrl, supabaseKey, {
     cookies: {
       getAll() {
@@ -26,4 +26,20 @@ export const createClient = (
       },
     },
   });
+};
+
+export const getUser = async () => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return { supabase, user };
+};
+
+export const requireUser = async (redirectTo = "/") => {
+  const { supabase, user } = await getUser();
+  if (!user) {
+    redirect(redirectTo);
+  }
+  return { supabase, user };
 };

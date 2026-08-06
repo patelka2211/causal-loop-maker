@@ -14,6 +14,82 @@ export type Database = {
   };
   public: {
     Tables: {
+      factors: {
+        Row: {
+          created_at: string;
+          id: string;
+          name: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          name: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          name?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      links: {
+        Row: {
+          created_at: string;
+          destiny_factor_id: string;
+          id: string;
+          source_factor_id: string;
+          topic_id: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          destiny_factor_id: string;
+          id?: string;
+          source_factor_id: string;
+          topic_id: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          destiny_factor_id?: string;
+          id?: string;
+          source_factor_id?: string;
+          topic_id?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "links_destiny_factor_id_fkey";
+            columns: ["destiny_factor_id"];
+            isOneToOne: false;
+            referencedRelation: "factors";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "links_source_factor_id_fkey";
+            columns: ["source_factor_id"];
+            isOneToOne: false;
+            referencedRelation: "factors";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "links_topic_id_fkey";
+            columns: ["topic_id"];
+            isOneToOne: false;
+            referencedRelation: "topics";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       topics: {
         Row: {
           created_at: string;

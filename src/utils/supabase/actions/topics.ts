@@ -1,16 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
-import { createClient } from "@/utils/supabase/server";
+import { getUser } from "@/utils/supabase/server";
 
 export async function createTopic(formData: FormData) {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getUser();
 
   if (!user) {
     return { error: "You must be signed in to create a topic." };
@@ -45,12 +39,7 @@ export async function updateTopic(
   id: string,
   data: { name: string; description?: string | null },
 ) {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getUser();
 
   if (!user) {
     return { error: "You must be signed in to update a topic." };
@@ -82,12 +71,7 @@ export async function updateTopic(
 }
 
 export async function deleteTopic(id: string) {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getUser();
 
   if (!user) {
     return { error: "You must be signed in to delete a topic." };
