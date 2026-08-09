@@ -16,7 +16,9 @@ import {
   useNodesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import EditLinkModal, { LinkDataForEdit } from "@/components/EditLinkModal";
 import { TopicLinkItem } from "@/utils/supabase/actions/links";
 
 // Custom Node Component matching clean, minimal, lightweight aesthetic
@@ -135,6 +137,9 @@ export type CausalEdgeData = {
   hasDelay: boolean;
   curvature?: number;
   isSelfLoop?: boolean;
+  topicId?: string;
+  sourceName?: string;
+  targetName?: string;
 };
 
 function CausalEdge({
@@ -185,7 +190,15 @@ function CausalEdge({
   }
 
   return (
-    <g>
+    <g className="group cursor-pointer">
+      {/* Invisible wide interaction path for responsive mouse click and touchscreen tap (24px hit area) */}
+      <path
+        d={path}
+        fill="none"
+        stroke="transparent"
+        strokeWidth={24}
+        className="react-flow__edge-interaction cursor-pointer"
+      />
       {/* Underlying stable edge line */}
       <path
         id={id}
@@ -194,7 +207,7 @@ function CausalEdge({
         stroke={strokeColor}
         strokeWidth={1.5}
         strokeOpacity={0.3}
-        className="react-flow__edge-path"
+        className="react-flow__edge-path transition-all duration-200 group-hover:stroke-width-[2.5] group-hover:stroke-opacity-80"
       />
       {/* Animated directional flow segment traveling at 0.8s (immediate) or 4.8s (delayed) */}
       <path
@@ -204,6 +217,7 @@ function CausalEdge({
         strokeWidth={2}
         strokeDasharray="6 14"
         strokeLinecap="round"
+        className="transition-all duration-200 group-hover:stroke-width-[3]"
         style={{
           animation: `causalFlow ${animationDuration} linear infinite`,
         }}
@@ -345,6 +359,9 @@ function buildGraphFromLinks(links: TopicLinkItem[]) {
         hasDelay: link.has_delay,
         curvature,
         isSelfLoop,
+        topicId: link.topic_id,
+        sourceName: link.source_factor?.name || "Source Factor",
+        targetName: link.target_factor?.name || "Target Factor",
       },
     };
   });
@@ -357,6 +374,7 @@ interface TopicCanvasProps {
 }
 
 export default function TopicCanvas({ initialLinks = [] }: TopicCanvasProps) {
+  const router = useRouter();
   const nodeTypes = useMemo(() => ({ causalNode: CausalNode }), []);
   const edgeTypes = useMemo(() => ({ causalEdge: CausalEdge }), []);
 
@@ -364,11 +382,41 @@ export default function TopicCanvas({ initialLinks = [] }: TopicCanvasProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialGraph.nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialGraph.edges);
 
+  const [selectedLinkForEdit, setSelectedLinkForEdit] =
+    useState<LinkDataForEdit | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
   useEffect(() => {
     const updated = buildGraphFromLinks(initialLinks);
     setNodes(updated.nodes);
     setEdges(updated.edges);
   }, [initialLinks, setNodes, setEdges]);
+
+  const handleEdgeClick = useCallback(
+    (_: React.MouseEvent, edge: Edge<CausalEdgeData>) => {
+      if (edge.data && edge.data.topicId) {
+        setSelectedLinkForEdit({
+          id: edge.id,
+          topicId: edge.data.topicId,
+          sourceName: edge.data.sourceName || "Source Factor",
+          targetName: edge.data.targetName || "Target Factor",
+          polarity: edge.data.polarity,
+          hasDelay: edge.data.hasDelay,
+        });
+        setIsEditModalOpen(true);
+      }
+    },
+    []
+  );
+
+  const handleEditModalClose = useCallback(() => {
+    setIsEditModalOpen(false);
+    setSelectedLinkForEdit(null);
+  }, []);
+
+  const handleEditSuccess = useCallback(() => {
+    router.refresh();
+  }, [router]);
 
   if (nodes.length === 0) {
     return (
@@ -409,11 +457,12 @@ export default function TopicCanvas({ initialLinks = [] }: TopicCanvasProps) {
         edgeTypes={edgeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onEdgeClick={handleEdgeClick}
         fitView
         nodesDraggable={false}
         nodesConnectable={false}
         nodesFocusable={false}
-        edgesFocusable={false}
+        edgesFocusable={true}
         elementsSelectable={false}
       >
         <Background
@@ -432,6 +481,13 @@ export default function TopicCanvas({ initialLinks = [] }: TopicCanvasProps) {
           className="!border-slate-200 !rounded-md !shadow-none"
         />
       </ReactFlow>
+
+      <EditLinkModal
+        isOpen={isEditModalOpen}
+        onClose={handleEditModalClose}
+        onSuccess={handleEditSuccess}
+        linkData={selectedLinkForEdit}
+      />
     </div>
   );
 }

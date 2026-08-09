@@ -110,6 +110,7 @@ export async function createLink(params: CreateLinkParams) {
 
 export type TopicLinkItem = {
   id: string;
+  topic_id: string;
   polarity: "POSITIVE" | "NEGATIVE";
   has_delay: boolean;
   source_factor_id: string;
@@ -132,6 +133,7 @@ export async function getTopicLinks(topicId: string): Promise<TopicLinkItem[]> {
     .from("links")
     .select(`
       id,
+      topic_id,
       polarity,
       has_delay,
       source_factor_id,
@@ -145,4 +147,60 @@ export async function getTopicLinks(topicId: string): Promise<TopicLinkItem[]> {
   if (error || !data) return [];
   return data as unknown as TopicLinkItem[];
 }
+
+export type UpdateLinkParams = {
+  id: string;
+  topicId: string;
+  polarity: "POSITIVE" | "NEGATIVE";
+  hasDelay: boolean;
+};
+
+export async function updateLink(params: UpdateLinkParams) {
+  const { supabase, user } = await getUser();
+  if (!user) return { error: "You must be signed in to update a link." };
+
+  const { id, topicId, polarity, hasDelay } = params;
+
+  const { error } = await supabase
+    .from("links")
+    .update({
+      polarity,
+      has_delay: hasDelay,
+    })
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath(`/topic/${topicId}`);
+  return { success: true };
+}
+
+export type DeleteLinkParams = {
+  id: string;
+  topicId: string;
+};
+
+export async function deleteLink(params: DeleteLinkParams) {
+  const { supabase, user } = await getUser();
+  if (!user) return { error: "You must be signed in to delete a link." };
+
+  const { id, topicId } = params;
+
+  const { error } = await supabase
+    .from("links")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath(`/topic/${topicId}`);
+  return { success: true };
+}
+
 
