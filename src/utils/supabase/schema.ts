@@ -41,42 +41,48 @@ export type Database = {
       links: {
         Row: {
           created_at: string;
-          destiny_factor_id: string;
+          has_delay: boolean;
           id: string;
+          polarity: Database["public"]["Enums"]["link_polarity"];
           source_factor_id: string;
+          target_factor_id: string;
           topic_id: string;
           updated_at: string;
           user_id: string;
         };
         Insert: {
           created_at?: string;
-          destiny_factor_id: string;
+          has_delay: boolean;
           id?: string;
+          polarity: Database["public"]["Enums"]["link_polarity"];
           source_factor_id: string;
+          target_factor_id: string;
           topic_id: string;
           updated_at?: string;
           user_id: string;
         };
         Update: {
           created_at?: string;
-          destiny_factor_id?: string;
+          has_delay?: boolean;
           id?: string;
+          polarity?: Database["public"]["Enums"]["link_polarity"];
           source_factor_id?: string;
+          target_factor_id?: string;
           topic_id?: string;
           updated_at?: string;
           user_id?: string;
         };
         Relationships: [
           {
-            foreignKeyName: "links_destiny_factor_id_fkey";
-            columns: ["destiny_factor_id"];
+            foreignKeyName: "links_source_factor_id_fkey";
+            columns: ["source_factor_id"];
             isOneToOne: false;
             referencedRelation: "factors";
             referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "links_source_factor_id_fkey";
-            columns: ["source_factor_id"];
+            foreignKeyName: "links_target_factor_id_fkey";
+            columns: ["target_factor_id"];
             isOneToOne: false;
             referencedRelation: "factors";
             referencedColumns: ["id"];
@@ -125,7 +131,7 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
-      [_ in never]: never;
+      link_polarity: "POSITIVE" | "NEGATIVE";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -255,6 +261,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      link_polarity: ["POSITIVE", "NEGATIVE"],
+    },
   },
 } as const;
