@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { TagIcon } from "lucide-react";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 import SignOutButton from "@/components/SignOutButton";
 import TopicList from "@/components/TopicList";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getFactorsWithUsage } from "@/utils/supabase/actions/links";
 import { getUser } from "@/utils/supabase/server";
 
 export default async function Page() {
@@ -28,11 +30,16 @@ export default async function Page() {
     );
   }
 
-  const { data: topics } = await supabase
-    .from("topics")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("updated_at", { ascending: false });
+  const [{ data: topics }, factors] = await Promise.all([
+    supabase
+      .from("topics")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("updated_at", { ascending: false }),
+    getFactorsWithUsage(),
+  ]);
+
+  const unusedCount = factors.filter((f) => f.isUnused).length;
 
   const userName =
     user.user_metadata?.name || user.email?.split("@")[0] || "User";
@@ -51,6 +58,23 @@ export default async function Page() {
             Causal Loop Maker
           </Link>
           <div className="flex items-center gap-3">
+            {unusedCount > 0 && (
+              <Link
+                href="/factors"
+                className="inline-flex items-center gap-2 h-9 px-3 rounded-lg border border-border bg-background hover:bg-accent text-xs sm:text-sm font-medium transition-colors cursor-pointer shadow-xs"
+                title="Open Factor Browser"
+              >
+                <TagIcon className="size-4 text-muted-foreground shrink-0" />
+                <span className="hidden sm:inline text-muted-foreground font-medium">
+                  Factors:
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30">
+                  {unusedCount} unused
+                </span>
+              </Link>
+            )}
+
+
             <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-muted/60 border border-border text-xs">
               <Avatar className="size-6">
                 {userAvatarUrl && (

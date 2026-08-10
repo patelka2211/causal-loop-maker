@@ -39,6 +39,7 @@ export default async function TopicPage({ params }: TopicPageProps) {
           <Button
             variant="ghost"
             size="icon"
+            nativeButton={false}
             render={
               <Link href="/" title="Back to topics">
                 <ArrowLeftIcon />

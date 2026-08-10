@@ -30,6 +30,96 @@ export async function getFactors(): Promise<FactorItem[]> {
   return data;
 }
 
+export type FactorWithUsage = {
+  id: string;
+  name: string;
+  created_at?: string;
+  usageCount: number;
+  isUnused: boolean;
+};
+
+export async function getFactorsWithUsage(): Promise<FactorWithUsage[]> {
+  const { supabase, user } = await getUser();
+  if (!user) return [];
+
+  const { data: factors, error: factorsError } = await supabase
+    .from("factors")
+    .select("id, name, created_at")
+    .eq("user_id", user.id)
+    .order("name", { ascending: true });
+
+  if (factorsError || !factors) return [];
+
+  const { data: links, error: linksError } = await supabase
+    .from("links")
+    .select("source_factor_id, target_factor_id")
+    .eq("user_id", user.id);
+
+  if (linksError || !links) {
+    return factors.map((f) => ({
+      ...f,
+      usageCount: 0,
+      isUnused: true,
+    }));
+  }
+
+  const usageMap: Record<string, number> = {};
+  for (const link of links) {
+    if (link.source_factor_id) {
+      usageMap[link.source_factor_id] = (usageMap[link.source_factor_id] || 0) + 1;
+    }
+    if (link.target_factor_id) {
+      usageMap[link.target_factor_id] = (usageMap[link.target_factor_id] || 0) + 1;
+    }
+  }
+
+  return factors.map((f) => {
+    const usageCount = usageMap[f.id] || 0;
+    return {
+      id: f.id,
+      name: f.name,
+      created_at: f.created_at,
+      usageCount,
+      isUnused: usageCount === 0,
+    };
+  });
+}
+
+export async function deleteFactor(id: string) {
+  const { supabase, user } = await getUser();
+  if (!user) return { error: "You must be signed in to delete a factor." };
+
+  const { count, error: countError } = await supabase
+    .from("links")
+    .select("id", { count: "exact", head: true })
+    .or(`source_factor_id.eq.${id},target_factor_id.eq.${id}`)
+    .eq("user_id", user.id);
+
+  if (countError) {
+    return { error: countError.message };
+  }
+
+  if (count && count > 0) {
+    return {
+      error: `Cannot delete factor because it is used in ${count} link(s).`,
+    };
+  }
+
+  const { error } = await supabase
+    .from("factors")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/");
+  return { success: true };
+}
+
+
 export async function createFactor(
   name: string,
 ): Promise<{ factor?: FactorItem; error?: string }> {

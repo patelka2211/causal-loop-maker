@@ -144,6 +144,7 @@ export default function TopicList({ initialTopics }: TopicListProps) {
                   variant="link"
                   size="sm"
                   className="px-0 font-semibold text-primary"
+                  nativeButton={false}
                   render={
                     <Link href={`/topic/${topic.id}`}>
                       Open Diagram
