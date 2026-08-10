@@ -406,7 +406,7 @@ export default function TopicCanvas({ initialLinks = [] }: TopicCanvasProps) {
         setIsEditModalOpen(true);
       }
     },
-    []
+    [],
   );
 
   const handleEditModalClose = useCallback(() => {

@@ -183,7 +183,10 @@ export default function EditLinkModal({
                     onClick={handleDelete}
                   >
                     {isPending ? (
-                      <Loader2Icon className="animate-spin" data-icon="inline-start" />
+                      <Loader2Icon
+                        className="animate-spin"
+                        data-icon="inline-start"
+                      />
                     ) : (
                       <Trash2Icon data-icon="inline-start" />
                     )}

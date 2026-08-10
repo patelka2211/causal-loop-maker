@@ -2,6 +2,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CreateLinkModal from "@/components/CreateLinkModal";
+import LoopsModal from "@/components/LoopsModal";
 import TopicCanvas from "@/components/TopicCanvas";
 import { Button } from "@/components/ui/button";
 import { getTopicLinks } from "@/utils/supabase/actions/links";
@@ -51,7 +52,10 @@ export default async function TopicPage({ params }: TopicPageProps) {
           </h1>
         </div>
 
-        <CreateLinkModal topicId={topic.id} showTrigger />
+        <div className="flex items-center gap-2">
+          <LoopsModal links={links} />
+          <CreateLinkModal topicId={topic.id} showTrigger />
+        </div>
       </header>
 
       {/* Main ReactFlow Canvas Area */}

@@ -202,5 +202,3 @@ export async function deleteLink(params: DeleteLinkParams) {
   revalidatePath(`/topic/${topicId}`);
   return { success: true };
 }
-
-
