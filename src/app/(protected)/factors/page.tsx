@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import FactorBrowser from "@/components/FactorBrowser";
@@ -6,6 +7,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getFactorsWithUsage } from "@/utils/supabase/actions/links";
 import { requireUser } from "@/utils/supabase/server";
+
+export const metadata: Metadata = {
+  title: "Factor Browser",
+};
 
 export default async function FactorsPage() {
   const { user } = await requireUser();

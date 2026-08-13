@@ -14,10 +14,12 @@ export default async function Page() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-4 font-sans">
         <div className="max-w-sm w-full p-8 space-y-6 bg-card rounded-xl border border-border text-center shadow-xs">
-          <div className="space-y-2">
-            <h1 className="text-xl font-bold tracking-tight">
-              Causal Loop Maker
-            </h1>
+          <div className="space-y-3 flex flex-col items-center">
+            <img
+              src="/ouro.svg"
+              alt="Ouro"
+              className="h-9 w-auto dark:invert"
+            />
             <p className="text-xs text-muted-foreground">
               Sign in to access and manage your causal loop diagrams.
             </p>
@@ -53,9 +55,14 @@ export default async function Page() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <Link
             href="/"
-            className="font-bold text-lg tracking-tight hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            title="Ouro"
           >
-            Causal Loop Maker
+            <img
+              src="/ouro.svg"
+              alt="Ouro"
+              className="h-6 w-auto dark:invert shrink-0"
+            />
           </Link>
           <div className="flex items-center gap-3">
             {unusedCount > 0 && (
@@ -73,7 +80,6 @@ export default async function Page() {
                 </span>
               </Link>
             )}
-
 
             <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-muted/60 border border-border text-xs">
               <Avatar className="size-6">

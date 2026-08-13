@@ -21,10 +21,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import {
-  deleteFactor,
-  FactorWithUsage,
-} from "@/utils/supabase/actions/links";
+import { deleteFactor, FactorWithUsage } from "@/utils/supabase/actions/links";
 
 interface FactorBrowserProps {
   initialFactors: FactorWithUsage[];
@@ -271,7 +268,8 @@ export default function FactorBrowser({ initialFactors }: FactorBrowserProps) {
                     </span>
                   ) : (
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
-                      {factor.usageCount} {factor.usageCount === 1 ? "link" : "links"}
+                      {factor.usageCount}{" "}
+                      {factor.usageCount === 1 ? "link" : "links"}
                     </span>
                   )}
 

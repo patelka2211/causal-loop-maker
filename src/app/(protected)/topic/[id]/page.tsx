@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -11,6 +12,25 @@ import { requireUser } from "@/utils/supabase/server";
 type TopicPageProps = {
   params: Promise<{ id: string }>;
 };
+
+export async function generateMetadata({
+  params,
+}: TopicPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const { supabase, user } = await requireUser();
+  const { data: topic } = await supabase
+    .from("topics")
+    .select("name")
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!topic) {
+    return { title: "Topic Not Found" };
+  }
+
+  return { title: topic.name };
+}
 
 export default async function TopicPage({ params }: TopicPageProps) {
   const { id } = await params;

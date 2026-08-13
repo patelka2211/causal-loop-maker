@@ -246,7 +246,7 @@ export default function TopicList({ initialTopics }: TopicListProps) {
             </CardTitle>
             <CardDescription className="max-w-sm">
               Create your first causal topic to start mapping variables,
-              cause-and-effect relationships, and feedback loops.
+              cause-and-effect relationships, and feedback loops in Ouro.
             </CardDescription>
           </CardHeader>
           <CardFooter className="pt-4 border-t-0 bg-transparent">

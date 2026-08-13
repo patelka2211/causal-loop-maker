@@ -66,10 +66,12 @@ export async function getFactorsWithUsage(): Promise<FactorWithUsage[]> {
   const usageMap: Record<string, number> = {};
   for (const link of links) {
     if (link.source_factor_id) {
-      usageMap[link.source_factor_id] = (usageMap[link.source_factor_id] || 0) + 1;
+      usageMap[link.source_factor_id] =
+        (usageMap[link.source_factor_id] || 0) + 1;
     }
     if (link.target_factor_id) {
-      usageMap[link.target_factor_id] = (usageMap[link.target_factor_id] || 0) + 1;
+      usageMap[link.target_factor_id] =
+        (usageMap[link.target_factor_id] || 0) + 1;
     }
   }
 
@@ -118,7 +120,6 @@ export async function deleteFactor(id: string) {
   revalidatePath("/");
   return { success: true };
 }
-
 
 export async function createFactor(
   name: string,
