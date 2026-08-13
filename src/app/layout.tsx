@@ -18,8 +18,8 @@ export const metadata: Metadata = {
   },
   description: "Create, visualize, and manage causal loop diagrams.",
   icons: {
-    icon: [{ url: "/ouro-favicon.svg", type: "image/svg+xml" }],
-    apple: "/ouro-favicon.svg",
+    icon: [{ url: "/favicon.ico", type: "image/svg+xml" }],
+    apple: "/favicon.ico",
   },
   openGraph: {
     title: "Ouro",
