@@ -31,7 +31,7 @@ export async function createTopic(formData: FormData) {
     return { error: error.message };
   }
 
-  revalidatePath("/");
+  revalidatePath("/dashboard");
   return { success: true, topic: data };
 }
 
@@ -66,7 +66,7 @@ export async function updateTopic(
     return { error: error.message };
   }
 
-  revalidatePath("/");
+  revalidatePath("/dashboard");
   return { success: true };
 }
 
@@ -87,6 +87,6 @@ export async function deleteTopic(id: string) {
     return { error: error.message };
   }
 
-  revalidatePath("/");
+  revalidatePath("/dashboard");
   return { success: true };
 }

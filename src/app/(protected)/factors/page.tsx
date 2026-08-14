@@ -32,9 +32,9 @@ export default async function FactorsPage() {
               size="icon"
               nativeButton={false}
               render={
-                <Link href="/" title="Back to home">
+                <Link href="/dashboard" title="Back to dashboard">
                   <ArrowLeftIcon />
-                  <span className="sr-only">Back to home</span>
+                  <span className="sr-only">Back to dashboard</span>
                 </Link>
               }
             />

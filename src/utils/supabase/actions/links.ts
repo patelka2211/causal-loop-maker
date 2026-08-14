@@ -117,7 +117,8 @@ export async function deleteFactor(id: string) {
     return { error: error.message };
   }
 
-  revalidatePath("/");
+  revalidatePath("/factors");
+  revalidatePath("/dashboard");
   return { success: true };
 }
 

@@ -36,7 +36,7 @@ export const getUser = async () => {
   return { supabase, user };
 };
 
-export const requireUser = async (redirectTo = "/") => {
+export const requireUser = async (redirectTo = "/login") => {
   const { supabase, user } = await getUser();
   if (!user) {
     redirect(redirectTo);

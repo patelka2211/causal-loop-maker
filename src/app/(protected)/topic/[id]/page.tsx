@@ -61,7 +61,7 @@ export default async function TopicPage({ params }: TopicPageProps) {
             size="icon"
             nativeButton={false}
             render={
-              <Link href="/" title="Back to topics">
+              <Link href="/dashboard" title="Back to topics">
                 <ArrowLeftIcon />
                 <span className="sr-only">Back to topics</span>
               </Link>
